@@ -1,0 +1,195 @@
+<%- include('head.ejs'); %>
+<body>
+  <%- include('header.ejs'); %>
+	<div class="container-fluid">
+		<div class="card" id="card_home" style="background: rgb(199, 205, 209, 0.8);">
+			<div class="card-header" style="text-align: center;">
+        <h2>Live Scores</h2>
+      </div>
+      
+			<div class="card-body">
+        <div id="date_list" class="select-list" tabindex="1" style="margin-left: 5%;margin-top: -70px;position: absolute;background-color: #fff;">
+
+        </div>
+        <div id="list1" class="dropdown-check-list" tabindex="2" style="margin-left: 75%;margin-top: -70px;position: absolute;background-color: #fff;">
+          <span class="anchor">Choose Leagues</span>
+          <ul class="items" style="text-align: left;">
+            <li><input type="checkbox" name="league-type" value="ChampionsLeague" checked/> Champions League</li> 
+            <li><input type="checkbox" name="league-type" value="EuropaLeague" checked/> Europa League</li> 
+            <li><input type="checkbox" name="league-type" value="PremierLeague" checked/> Premier League </li>
+            <li><input type="checkbox" name="league-type" value="Bundesliga" checked/> Bundesliga</li>
+            <li><input type="checkbox" name="league-type" value="LaLiga" checked/> La Liga</li>
+            <li><input type="checkbox" name="league-type" value="SerieA" checked/> Serie A </li>
+            <li><input type="checkbox" name="league-type" value="Eredivise" checked/> Eredivise</li>
+            <li><input type="checkbox" name="league-type" value="Ligue1" checked/> Ligue 1</li>
+            <li><input type="checkbox" name="league-type" value="PrimeiraLiga" checked/> Primeira Liga</li>      
+          </ul>
+        </div>
+            
+        <script type="text/javascript">
+          var checkList = document.getElementById('list1');
+          checkList.getElementsByClassName('anchor')[0].onclick = function(evt) {
+            if (checkList.classList.contains('visible'))
+              checkList.classList.remove('visible');
+            else
+              checkList.classList.add('visible');
+          }
+        </script>
+
+        <div id="ChampionsLeague" class="ChampionsLeague">
+
+        </div>
+        <div id="EuropaLeague" class="EuropaLeague">
+
+        </div>
+        <div id="England_PremierLeague" class="PremierLeague">
+        
+        </div>
+        <div id="Germany_Bundesliga" class="Bundesliga">
+        
+        </div>
+        <div id="Spain_LaLiga" class="LaLiga">
+
+        </div>
+        <div id="Italy_SerieA" class="SerieA"> 
+
+        </div>
+        <div id="Netherlands_Eredivisie" class="Eredivise">
+
+        </div>
+        <div id="France_Ligue1" class="Ligue1">
+
+        </div>
+        <div id="Portugal_PrimeiraLiga" class="PrimeiraLiga">
+
+        </div>
+			</div>
+		</div>
+	</div>
+
+<%- include('footer.ejs'); %>
+
+<script>
+  var api_key = "a2994c55ccmsh52c97e939e28026p1ac42djsn3342553e6cbb";
+  $(function(){
+    $("#nav_home").addClass("active");
+    $("#nav_league").removeClass("active");
+    $("#nav_login").removeClass("active");
+
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth()+1).padStart(2, '0');
+    var yyyy = String(today.getFullYear()).padStart(4, '0');
+    today = yyyy + "-" + mm + "-" +dd;
+
+    var content_date = "<select id='select_date' name='select_date'>" +
+                            "<option disabled>--Select Date--</option>";
+
+    var datee = new Date();
+    datee.setDate(datee.getDate()-4);
+    for(var i = 0; i < 7; i++){
+      datee.setDate(datee.getDate()+1);
+      dd = String(datee.getDate()).padStart(2, '0');
+      mm = String(datee.getMonth()+1).padStart(2, '0');
+      yyyy = String(datee.getFullYear()).padStart(4, '0');
+      if(i == 3){
+        content_date += "<option selected value='" + yyyy + "-" + mm + "-" + dd +"'>" + mm + "/" + dd + "/" + yyyy + " (today)</option>";
+      }else{
+        content_date += "<option value='" + yyyy + "-" + mm + "-" + dd +"'>" + mm + "/" + dd + "/" + yyyy + "</option>";
+      }
+    }
+
+    content_date += "</select>";
+
+    $("#date_list").html(content_date);
+
+    $.ajax({
+      url: "https://api-football-v1.p.rapidapi.com/v2/fixtures/date/"+today,
+      type: "GET",
+      beforeSend: function(xhr){xhr.setRequestHeader('X-RapidAPI-Key', api_key);},
+      success: function(res) { 
+        appendContent(res.api.fixtures);
+      }
+    });
+
+    $('input[type="checkbox"]').click(function() { 
+        var inputValue = $(this).attr("value"); 
+        $("." + inputValue).toggle(); 
+    });
+
+    $('#select_date').change(function(){
+        var date = this.value;
+        $.ajax({
+          url: "https://api-football-v1.p.rapidapi.com/v2/fixtures/date/"+date,
+          type: "GET",
+          beforeSend: function(xhr){xhr.setRequestHeader('X-RapidAPI-Key', api_key);},
+          success: function(res) { 
+            appendContent(res.api.fixtures);
+          }
+        });
+    });
+  });
+  
+  function appendContent(data){
+    let data_PremierLeague = data.filter(item=>item.league.country=="England"&&item.league.name=="Premier League");
+    let data_Bundesliga = data.filter(item=>item.league.country=="Germany"&&item.league.name=="Bundesliga 1");
+    let data_LaLiga = data.filter(item=>item.league.country=="Spain"&&item.league.name=="Primera Division");
+    let data_SerieA = data.filter(item=>item.league.country=="Italy"&&item.league.name=="Serie A");
+    let data_Eredivisie = data.filter(item=>item.league.country=="Netherlands"&&item.league.name=="Eredivisie");
+    let data_league1 = data.filter(item=>item.league.country=="France"&&item.league.name=="Ligue 1");
+    let data_PremieraLiga = data.filter(item=>item.league.country=="Portugal"&&item.league.name=="Primeira Liga");
+
+    let data_ChampionsLeague = data.filter(item=>item.league.country=="World"&&item.league.name=="UEFA Champions League");
+    let data_EuropaLeague = data.filter(item=>item.league.country=="World"&&item.league.name=="UEFA Europa League");
+
+    let content_ChampionsLeague = getContent_item("Champions League", data_ChampionsLeague);
+    $("#ChampionsLeague").html(content_ChampionsLeague);
+
+    let content_EuropaLeague = getContent_item("Europa League", data_EuropaLeague);
+    $("#EuropaLeague").html(content_EuropaLeague);
+
+    let content_PremierLeague = getContent_item("England - Premier League", data_PremierLeague); 
+    $("#England_PremierLeague").html(content_PremierLeague);
+    
+    let content_Bundesliga = getContent_item("Germany - Bundesliga", data_Bundesliga);
+    $("#Germany_Bundesliga").html(content_Bundesliga);
+
+    let content_LaLiga = getContent_item("Spain - La Liga", data_LaLiga);
+    $("#Spain_LaLiga").html(content_LaLiga);
+
+    let content_SerieA = getContent_item("Italy - Serie A", data_SerieA);
+    $("#Italy_SerieA").html(content_SerieA);
+
+    let content_Eredivisie = getContent_item("Netherlands - Eredivisie", data_Eredivisie);
+    $("#Netherlands_Eredivisie").html(content_Eredivisie);
+
+    let content_Ligue1 = getContent_item("France - Ligue 1", data_league1);
+    $("#France_Ligue1").html(content_Ligue1);
+
+    let content_PrimeiraLiga = getContent_item("Portugal - Primeira Liga", data_PremieraLiga);
+    $("#Portugal_PrimeiraLiga").html(content_PrimeiraLiga);
+  }
+
+  function getContent_item(league_name, data){
+    if(data.length == 0){
+      return null;
+    }
+    let content="<br/><h5>" + league_name + "</h5><hr style='height:2px;border-width:0;color:gray;background-color:gray'><table class='table table-bordered table-secondary' style='width:100%;'>";
+    
+    data.forEach(e => {
+    var goals_HomeTeam = e.goalsHomeTeam == null ? "?" : e.goalsHomeTeam;
+    var goals_AwayTeam = e.goalsAwayTeam == null ? "?" : e.goalsAwayTeam;
+    content += "<tr>"+
+                  "<td style='width:15%;'>" + e.statusShort + "</td>"+
+                  "<td style='width:35%'>" + e.homeTeam.team_name + "</td>" + 
+                  "<td style='width:15%%'>" + goals_HomeTeam + " - " +goals_AwayTeam +"</td>" + 
+                  "<td style='width:35%'>" + e.awayTeam.team_name + "</td>"+
+                "</tr>";
+    });
+
+    content += "</td></tr></table>";
+    return content;
+  }
+</script>
+</body>
+</html>

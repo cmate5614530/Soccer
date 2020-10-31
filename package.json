@@ -1,0 +1,22 @@
+{
+  "name": "soccerfront",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon node app.js",
+    "dev": "concurrently \"npm run start \"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.10",
+    "nodemon": "^2.0.6",
+    "require": "^2.4.20",
+    "serve-favicon": "^2.5.0"
+  }
+}

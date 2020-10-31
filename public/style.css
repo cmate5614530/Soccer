@@ -1,0 +1,114 @@
+body{
+    font-size:16px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+	background-size: cover;
+	background-image: linear-gradient(to bottom, #3d454f , #5a6470);
+
+}
+
+.centertitle{
+	text-align: center;
+}
+
+select#select_date{
+    border-radius: 2px;
+    width: 145px;
+    height: 35px;
+}
+
+form{
+    text-align: center;
+}
+
+footer {
+    position: fixed;
+    height: 50px;
+    bottom: 0;
+    width: 100%;
+    color: #b8b8b8;
+}
+
+.blink_me {
+  animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {  
+  50% { opacity: 0; }
+}
+
+.dropdown-check-list {
+  display: inline-block;
+}
+
+.dropdown-check-list .anchor {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  padding: 5px 50px 5px 10px;
+  border: 1px solid #ccc;
+}
+
+.dropdown-check-list .anchor:after {
+  position: absolute;
+  content: "";
+  border-left: 2px solid black;
+  border-top: 2px solid black;
+  padding: 5px;
+  right: 10px;
+  top: 20%;
+  -moz-transform: rotate(-135deg);
+  -ms-transform: rotate(-135deg);
+  -o-transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+  transform: rotate(-135deg);
+}
+
+.dropdown-check-list .anchor:active:after {
+  right: 8px;
+  top: 21%;
+}
+
+.dropdown-check-list ul.items {
+  padding: 2px;
+  display: none;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.dropdown-check-list ul.items li {
+  list-style: none;
+}
+
+.dropdown-check-list.visible .anchor {
+  color: #0094ff;
+}
+
+.dropdown-check-list.visible .items {
+  display: block;
+}
+
+@media only screen and (min-width: 768px) {
+  #card_home{
+    width: 952px;
+    margin: 100px auto 40px;
+    font-size: 14px;
+  }
+  #card_league_table{
+    width: 952px;
+    margin: 35px auto 40px;
+  }
+}
+tr{
+text-align: center;
+font-size: larger;
+/* font-weight: bold; */
+}
+.card-body{
+max-height:590px;
+overflow-x: hidden;
+overflow-y: auto;
+}
+

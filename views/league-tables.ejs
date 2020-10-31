@@ -1,0 +1,148 @@
+<%- include('head.ejs'); %>
+<body>
+  <%- include('header.ejs'); %>
+  <div style="text-align: center;font-size:larger;padding-top: 35px;">
+    <label for="league">Choose League :  </label>
+    <select id="league" name="league" class="btn btn-secondary dropdown-toggle">
+        <option value="ChampionsLeague"> Champions League</option> 
+        <option value="EuropaLeague"> Europa League</option> 
+        <option value="PremierLeague"> Premier League</option> 
+        <option value="Bundesliga"> Bundesliga</option> 
+        <option value="LaLiga"> La Liga</option> 
+        <option value="SerieA"> Serie A</option> 
+        <option value="Eredivise"> Eredivise</option> 
+        <option value="Ligue1"> Ligue 1</option>  
+        <option value="PrimeiraLiga"> Primeira Liga</option>  
+    </select>
+  </div>
+	<div class="container-fluid">
+        <div class="card" id="card_league_table" style="background: rgb(255, 255, 255, 1);">
+			      <div class="card-header" id="league_logo" style="text-align: left;display: inline-flex;">
+                
+            </div>
+      
+            <div class="card-body" id="league_table">
+                      
+            </div>
+		    </div>
+	</div>
+
+<%- include('footer.ejs'); %>
+
+<script>
+  var api_key = "a2994c55ccmsh52c97e939e28026p1ac42djsn3342553e6cbb";
+  $(function(){
+    $("#nav_league").addClass("active");
+    $("#nav_home").removeClass("active");
+    $("#nav_login").removeClass("active");
+
+    $("#league").val("Bundesliga");
+    getContent("Germany", "Bundesliga 1");
+    
+    $("#league").change(function(){
+      if(this.value == "ChampionsLeague"){
+        getContent("World", "UEFA Champions League");
+      }
+      if(this.value == "EuropaLeague"){
+        getContent("World", "UEFA Europa League");
+      }
+      if(this.value == "PremierLeague"){
+        getContent("England", "Premier League");        
+      }
+      if(this.value == "Bundesliga"){
+        getContent("Germany", "Bundesliga 1");        
+      }
+      if(this.value == "LaLiga"){
+        getContent("Spain", "Primera Division");        
+      }
+      if(this.value == "SerieA"){
+        getContent("Italy", "Serie A");        
+      }
+      if(this.value == "Eredivise"){
+        getContent("Netherlands", "Eredivisie");        
+      }
+      if(this.value == "Ligue1"){
+        getContent("France", "Ligue 1");        
+      }
+      if(this.value == "PrimeiraLiga"){
+        getContent("Portugal", "Primeira Liga");        
+      }
+    });
+  });
+  
+  async function getContent(country, leaguename){
+    var yyyy = (new Date()).getFullYear();
+    var data = [];
+    
+    await $.ajax({
+      url: "https://api-football-v1.p.rapidapi.com/v2/leagues/country/"+country+"/"+yyyy,
+      type: "GET",
+      beforeSend: function(xhr){xhr.setRequestHeader('X-RapidAPI-Key', api_key);},
+      success: function(res) { 
+        if(res.api.results == 0){
+          $.ajax({
+            url: "https://api-football-v1.p.rapidapi.com/v2/leagues/country/"+country+"/"+(yyyy-1),
+            type: "GET",
+            beforeSend: function(xhr){xhr.setRequestHeader('X-RapidAPI-Key', api_key);},
+            success:function(res){
+              if(res.api.results !== 0){
+                data = res.api.leagues;
+              }
+            }
+          });
+        }else{
+          data = res.api.leagues;
+        }
+      }
+    });
+
+    var league_ex = data.filter(item=>item.name == leaguename);
+    var standings_ex = [];
+    if(league_ex !== []){
+      var league_id_ex = league_ex[0].league_id;
+      var content_logo = "<img width='50' height='50' src='" + league_ex[0].logo + "'>&nbsp;&nbsp;&nbsp;<div><h6>" + league_ex[0].country.toUpperCase() + "</h6><h4>" + league_ex[0].name.toUpperCase() + "</h4></div>";
+      $("#league_logo").html(content_logo);
+      $.ajax({
+            url:"https://api-football-v1.p.rapidapi.com/v2/leagueTable/"+league_id_ex,
+            type: "GET",
+            beforeSend: function(xhr){xhr.setRequestHeader('X-RapidAPI-Key', api_key);},
+            success:function(res){
+              if(res.api.results !== 0){
+                standings_ex = res.api.standings[0];
+                var content = " <p style='font-weight:bold;'>" + league_ex[0].name.toUpperCase() + "</p>" + 
+                                "<table style='width:100%;font-size:12px;' class='table'>" +
+                                  "<tr>"+
+                                    "<th style='width:4%'>#</th>" +
+                                    "<th style='width:60%;text-align:left;'>Team</th>" +
+                                    "<th style='width:4%'>PL</th>" +
+                                    "<th style='width:4%'>W</th>" +
+                                    "<th style='width:4%'>D</th>" +
+                                    "<th style='width:4%'>L</th>" +
+                                    "<th style='width:8%'>+/-</th>" +
+                                    "<th style='width:6%'>GD</th>" +
+                                    "<th style='width:6%'>PTS</th>" +
+                                  "</tr>";
+                standings_ex.forEach(el => {
+                  content += "<tr>"+
+                                "<td style='width:4%'>" + el.rank + "</td>" +
+                                "<td style='width:60%;text-align:left;'><img class='Image TeamIcon' width='22' height='22' src='" + el.logo + "'>&nbsp;&nbsp;&nbsp;" + el.teamName + "</td>" +
+                                "<td style='width:4%'>" + el.all.matchsPlayed + "</td>" +
+                                "<td style='width:4%'>" + el.all.win + "</td>" +
+                                "<td style='width:4%'>" + el.all.draw + "</td>" +
+                                "<td style='width:4%'>" + el.all.lose + "</td>" +
+                                "<td style='width:8%'>" + el.all.goalsFor + " - " + el.all.goalsAgainst + "</td>" +
+                                "<td style='width:6%'>" + el.goalsDiff + "</td>" +
+                                "<td style='width:6%'>" + el.points + "</td>" +
+                             "</tr>"      
+                });
+                content += "</table>";
+                $("#league_table").html(content);
+              }
+            }
+      });
+    }
+  }
+  
+</script>
+</body>
+</html>
