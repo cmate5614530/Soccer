@@ -70,7 +70,7 @@
 <%- include('footer.ejs'); %>
 
 <script>
-  var api_key = "a2994c55ccmsh52c97e939e28026p1ac42djsn3342553e6cbb";
+  var api_key = "";
   $(function(){
     $("#nav_home").addClass("active");
     $("#nav_league").removeClass("active");
@@ -174,7 +174,7 @@
     if(data.length == 0){
       return null;
     }
-    let content="<br/><h5>" + league_name + "</h5><hr style='height:2px;border-width:0;color:gray;background-color:gray'><table class='table table-bordered table-secondary' style='width:100%;'>";
+    let content="<br/><h5>" + league_name + "</h5><table class='table table-dark' style='width:100%;'>";
     
     data.forEach(e => {
     var goals_HomeTeam = e.goalsHomeTeam == null ? "?" : e.goalsHomeTeam;
